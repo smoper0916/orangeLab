@@ -1,0 +1,1073 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<link rel="stylesheet" type="text/css" href="default/css/board.css" />
+<link rel="stylesheet" type="text/css" href="default/css/base.css" />
+<link rel="stylesheet" type="text/css" href="default/css/skip.css" />
+<link rel="stylesheet" type="text/css" href="default/css/layout.css" />
+<link rel="stylesheet" type="text/css" href="default/css/content.css" />
+<link rel="stylesheet" type="text/css" href="default/css/paging.css" /> 
+<link rel="stylesheet" type="text/css" href="../../../js/calendar/css/aqua/theme.css">
+
+<script type="text/javascript" src="../../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../../js/paging.js"></script>
+<script type="text/javascript" src="../../../js/valid.js"></script>
+<script type="text/javascript" src="../../../js/common.js"></script>
+<script type='text/javascript' src="../../../js/calendar/jquery.dynDateTime.js"></script>
+<script type="text/javascript" src="../../../js/calendar/calendar-kr.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	$('#boardNormalList_btn_Insert').css('cursor','pointer').click(function() {
+		$('#frm_list').attr('action', 'move_insert01.do');
+		$('#frm_list').submit();
+	});
+
+	$('#boardNormalList_btn_Delete').css('cursor','pointer').click(function() {
+		btnDel();
+	});
+	
+	$('#boardNormalList_btn_Move').css('cursor','pointer').click(function() {
+		btnMove();
+	});
+	
+	$('#boardNormalList_btn_Search').css('cursor','pointer').click(function() {
+		btnSearch();
+	});
+	
+	resizeParentFrame('ifrMain');
+
+
+});
+
+function btnView(seq){
+	var form = document.frm_list;
+	var pform = document.pagingForm;
+	form.action = "view01.do";
+	form.board_no.value = seq;
+	form.method = "get";
+	form.submit();
+}
+
+function btnDel(){
+	var form = document.frm_list;
+	var obj = document.getElementsByName("chk");
+	var cnt = 0;
+
+	for(var  i = 0; i < obj.length; i++){
+		if(obj[i].checked == true){
+			cnt += 1;
+		}
+	}
+
+	if(cnt == 0){
+		alert('선택된 항목이 없습니다.');
+		return false;
+	}
+
+	if (!confirm("선택된 게시글을 삭제 하시겠습니까?")){
+		return false;
+	}
+
+	form.action = "delete01_all.do";
+	form.method = "get";
+	form.submit();
+}
+
+function btnMove(){
+	var form = document.frm_list;
+	var obj = document.getElementsByName("chk");
+	var cnt = 0;
+
+	for(var  i = 0; i < obj.length; i++){
+		if(obj[i].checked == true){
+			cnt += 1;
+		}
+	}
+	if(form.confno.value == null || form.confno.value < 1){
+		alert('이동 할 게시판을 선택 하십시오.');
+		$('#frm_list select[name=confno]').focus();
+		return false;
+	}
+	if(cnt == 0){
+		alert('선택된 항목이 없습니다.');
+		return false;
+	}
+
+	if (!confirm("선택된 게시글을 이동 하시겠습니까?")){
+		return false;
+	}
+	
+	form.action = "move01.do";
+	form.to_conf_no.value = form.confno.value;
+	form.method = "get";
+	form.submit();
+}
+
+function btnSearch(){
+	var form = document.frm_list;
+	var pForm = document.pagingForm;
+	form.C_PAGE.value = "1";
+	form.action = "list01.do";
+	form.method = "get";
+	form.submit();
+}
+
+
+
+function btnSearchEnter(event) {
+	var key;
+	if(window.event) // IE
+	{
+		key = event.keyCode;
+	}
+	else if(event.which) // Netscape/Firefox/Opera
+	{
+		key = event.which;
+	}
+
+	if(key == 13) btnSearch();
+	
+}
+</script>
+</head>
+
+<body>
+<div id="boardNormalList_DIV" style="width: %; padding-top: 10px; padding-bottom: 20px;">
+<form name="frm_list" id="frm_list" action="list01.do" method="get">
+<fieldset>
+	<input type="hidden" name="conf_no" value="38"/>
+	<input type="hidden" name="board_no" value="" />
+	<input type="hidden" name="group_no" value="-1" />
+	<input type="hidden" name="up_geul_no" value="-1" />
+	<input type="hidden" name="to_conf_no" value=""/>
+	<input type="hidden" name="delete_yn" value="0"/>
+	<input type="hidden" id="board_type" name="board_type" value="hm" />
+	<input type="hidden" name="C_PAGE" value="1" />
+	<legend>[메인] 공지사항게시판 리스트</legend>
+	<!-- 검색부 시작-->
+
+				
+	<div class="board_search">
+	<dl>
+		<dt>
+
+			<select name="search_key" class="board_sel">
+				<option value="jemok" >제목</option>
+				<option value="naeyong" >내용</option>
+				<option value="jakseongja_nm" >작성자</option>
+			</select>
+		</dt>
+		<dd><input class="board_search_inp" id="hp_id" size="25" type="text" name="keyword" value="" onkeypress="btnSearchEnter(event);"/></dd>
+		<dd><img src="./default/img/board_btn_search.gif" alt="검색" id="boardNormalList_btn_Search" /></dd>
+	</dl>
+	</div>
+	<!-- 검색부 끝 -->
+
+	
+	
+	<!-- 게시판리스트 시작 -->
+	<table class="board_list" summary="각 게시물의 번호, 제목, 파일, 작성자, 작성일, 조회를 볼수 있고 제목 링크를 통해서 게시물 상세 내용으로 이동합니다.">
+		<caption id="boardNormalList_BoardConfDesc">게시판 : 전체게시물 4857개, 페이지1/1</caption>
+		<thead>
+			<tr>
+			
+			
+				<th class="fir" width="70">번호</th>
+				
+				<th>제목</th>
+				
+				<th width="100">작성자</th>
+				
+				
+				<th width="80">작성일</th>
+				
+				<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+				<th class="end" width="50">조회</th>
+			</tr>
+		</thead>
+		<tbody id="boardNormalList_ListBoardListVo">
+			
+			
+			<!-- 공지사항 리스트 :: S -->
+			
+				
+					<tr onclick="btnView('139727');" title="[ACE사업] 2015년 학생수기 우수 사례 모집 안내" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] [ACE사업] 2015년 학생수기 우수 사례 모집 안내</a>
+							
+							
+						</td>
+					
+			  			<td>
+			  				김시형
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.29</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>133</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('139686');" title="★(공학교육혁신센터)타이완 국제 교류 프로그램 참여학생 모집★" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] ★(공학교육혁신센터)타이완 국제 교류 프로그램 참여학...</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				김연희
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>254</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('139529');" title="2015년도 금오공과대학교 대학회계특수직(기획전략관) 채용시험 재공고" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] 2015년도 금오공과대학교 대학회계특수직(기획전략관)  ...</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				최은정
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.26</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>197</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('139330');" title="[대구통학버스] 11월 월권 신청 안내" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] [대구통학버스] 11월 월권 신청 안내</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				정석순
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.21</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>161</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('139221');" title="[국제] 2015학년도 11월 어학특강 신청안내" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] [국제] 2015학년도 11월 어학특강 신청안내</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				김민아
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.19</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>284</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('138914');" title="★제7회 kit人 Creative 경연대회 개최★" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] ★제7회 kit人 Creative 경연대회 개최★</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				여고은
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.14</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>392</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('138285');" title="[지역 기업 알기] "공대생, 구미 기업을 찾아 나서다!"" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] [지역 기업 알기] "공대생, 구미 기업을 찾아 나서다!"</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				김연희
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.01</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>608</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('135490');" title="2015년도 2학기 구미지역 통학버스 및 신평 셔틀버스 운행시간 안내" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] 2015년도 2학기 구미지역 통학버스 및 신평 셔틀버스 운...</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				이승근
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.08.28</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>1898</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('135375');" title="제1회 재정위원회 임시회 회의록 공개" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] 제1회 재정위원회 임시회 회의록 공개</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				이강욱
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.08.28</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>253</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('130300');" title="★ kit 디자인스튜디오 & 부속공장 온라인 예약 안내 ★" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] ★ kit 디자인스튜디오 & 부속공장 온라인 예약 안내 ★</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				최희영
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.06.12</td>
+						
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>1130</td>
+			  		</tr>
+		  		
+
+		  	
+			<!-- 공지사항 리스트 :: E -->
+			
+			
+				
+				
+					<tr title="앱개발 아이디어 공모전 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4857</td>
+			  			<td class="left" onclick="btnView('139757');" style="cursor: pointer;">
+							<a href="#">앱개발 아이디어 공모전 안내 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							<img src="./default/img/board_icon_n.gif" alt="NEW" />
+						</td>
+			  		
+			  			<td>
+			  				황부경
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.30</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>78</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="★2015 공학페스티벌 참관인원 모집★"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4856</td>
+			  			<td class="left" onclick="btnView('139729');" style="cursor: pointer;">
+							<a href="#">★2015 공학페스티벌 참관인원 모집★ </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				김연희
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.29</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>433</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2015 공학교육페스티벌 모여라, 어벤져스 모집"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4855</td>
+			  			<td class="left" onclick="btnView('139726');" style="cursor: pointer;">
+							<a href="#">2015 공학교육페스티벌 모여라, 어벤져스 모집 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				김연희
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.29</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>261</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2016 Valeo Innovation Challenge 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4854</td>
+			  			<td class="left" onclick="btnView('139724');" style="cursor: pointer;">
+							<a href="#">2016 Valeo Innovation Challenge 안내 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				이은연
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.29</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>192</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2015 공학교육페스티벌 융합아이디어 경진대회"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4853</td>
+			  			<td class="left" onclick="btnView('139720');" style="cursor: pointer;">
+							<a href="#">2015 공학교육페스티벌 융합아이디어 경진대회 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				김연희
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.29</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>168</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[취업] 영어 면접 대비 『취업캠프(3차)』 참여자 모집"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4852</td>
+			  			<td class="left" onclick="btnView('139710');" style="cursor: pointer;">
+							<a href="#">[취업] 영어 면접 대비 『취업캠프(3차)』 참여자 모집 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				박창윤
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.29</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>315</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[국제] 2016-1 해외파견 교환학생 추가 선발 합격자 발표"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4851</td>
+			  			<td class="left" onclick="btnView('139695');" style="cursor: pointer;">
+							<a href="#">[국제] 2016-1 해외파견 교환학생 추가 선발 합격자 발표 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				신지민
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>685</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[국제] 2016-1 필리핀 어학집중 교환학생 면접 공고"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4850</td>
+			  			<td class="left" onclick="btnView('139693');" style="cursor: pointer;">
+							<a href="#">[국제] 2016-1 필리핀 어학집중 교환학생 면접 공고 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				신지민
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>313</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[도서관]2015-2학기 'Co-Reading' 서평 공모전 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4849</td>
+			  			<td class="left" onclick="btnView('139688');" style="cursor: pointer;">
+							<a href="#">[도서관]2015-2학기 'Co-Reading' 서평 공모전 안내 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				한경숙
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>150</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="운동장 사용 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4848</td>
+			  			<td class="left" onclick="btnView('139687');" style="cursor: pointer;">
+							<a href="#">운동장 사용 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				한세덕
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>278</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="☆★ Undergraduate Admission Guide for International Student  2016 Spring ★☆ "
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4847</td>
+			  			<td class="left" onclick="btnView('139677');" style="cursor: pointer;">
+							<a href="#">☆★ Undergraduate Admission Guide for International Student  2016 Spring ★☆  </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				이성미
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>160</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="구미지역 통학버스 및 신평 셔틀버스 결행 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4846</td>
+			  			<td class="left" onclick="btnView('139672');" style="cursor: pointer;">
+							<a href="#">구미지역 통학버스 및 신평 셔틀버스 결행 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				한세덕
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>280</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="실험실 피난설비(유도등) 구축 소방공사"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4845</td>
+			  			<td class="left" onclick="btnView('139670');" style="cursor: pointer;">
+							<a href="#">실험실 피난설비(유도등) 구축 소방공사 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김기홍
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>57</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="◆ Graduate School Admission for International Student-Spring 2016 ◆"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4844</td>
+			  			<td class="left" onclick="btnView('139665');" style="cursor: pointer;">
+							<a href="#">◆ Graduate School Admission for International Student-Spring 2016 ◆ </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				구은회
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>138</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="디지털관 2,3,4층 무선 AP 일시적 사용 중단 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4843</td>
+			  			<td class="left" onclick="btnView('139655');" style="cursor: pointer;">
+							<a href="#">디지털관 2,3,4층 무선 AP 일시적 사용 중단 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				사공유덕
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.28</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>137</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="▷▶제3회 kit 캠퍼스 사진 공모전 안내 [기간연장!!!]◁◀"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4842</td>
+			  			<td class="left" onclick="btnView('139604');" style="cursor: pointer;">
+							<a href="#">▷▶제3회 kit 캠퍼스 사진 공모전 안내 [기간연장!!!]◁◀ </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				안미애
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.27</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>411</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2015 대경강원권 대학 연합 창업로드쇼 개최 안내 "
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4841</td>
+			  			<td class="left" onclick="btnView('139600');" style="cursor: pointer;">
+							<a href="#">2015 대경강원권 대학 연합 창업로드쇼 개최 안내  </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				링크사업단
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.27</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>86</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2015년도 한·일·중 인재 채용상담회 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4840</td>
+			  			<td class="left" onclick="btnView('139545');" style="cursor: pointer;">
+							<a href="#">2015년도 한·일·중 인재 채용상담회 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				이은연
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.26</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>424</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="정부3.0 우수사례 관련 이벤트 참여 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4839</td>
+			  			<td class="left" onclick="btnView('139542');" style="cursor: pointer;">
+							<a href="#">정부3.0 우수사례 관련 이벤트 참여 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				진기정
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.26</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>197</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[취업] 2015 취업대비 1:1 맞춤컨설팅 참가자 모집 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>4838</td>
+			  			<td class="left" onclick="btnView('139534');" style="cursor: pointer;">
+							<a href="#">[취업] 2015 취업대비 1:1 맞춤컨설팅 참가자 모집 안내 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				박창윤
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.10.26</td>
+
+						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>223</td>
+			  		</tr>
+		  		
+		  	
+		  	
+			
+			 
+			
+		</tbody>
+	</table>
+	<!-- 게시판리스트 끝 -->
+	
+	<!-- 게시판 기능/버튼 -->
+	<ul class="board_btn">
+		
+		<!-- 속성에 글쓰기가 선택되었을 경우 -->
+		
+			
+		
+	</ul>
+	<!-- 페이징 시작 -->
+	<div id="pagingWrapper">
+		
+
+
+			
+				<ul>
+					<li class="pagingGoToPrevFirst"><img src="/img/common/btn_first.gif" /><input type="hidden" value="1" /></li>
+					<li class="pagingGoToPrev"><img src="/img/common/btn_prev.gif" /><input type="hidden" value="1" /></li>
+				
+				
+					<li class="pagingNumbering">1 ·<input type="hidden" value="1" /></li>
+				
+				
+					<li class="pagingNumbering">2 ·<input type="hidden" value="2" /></li>
+				
+				
+					<li class="pagingNumbering">3 ·<input type="hidden" value="3" /></li>
+				
+				
+					<li class="pagingNumbering">4 ·<input type="hidden" value="4" /></li>
+				
+				
+					<li class="pagingNumbering">5 ·<input type="hidden" value="5" /></li>
+				
+				
+					<li class="pagingNumbering">6 ·<input type="hidden" value="6" /></li>
+				
+				
+					<li class="pagingNumbering">7 ·<input type="hidden" value="7" /></li>
+				
+				
+					<li class="pagingNumbering">8 ·<input type="hidden" value="8" /></li>
+				
+				
+					<li class="pagingNumbering">9 ·<input type="hidden" value="9" /></li>
+				
+				
+					<li class="pagingNumbering">10 ·<input type="hidden" value="10" /></li>
+				
+					<li class="pagingGoToNext"><img src="/img/common/btn_next.gif" /><input type="hidden" value="2" /></li>
+					<li class="pagingGoToNextLast"><img src="/img/common/btn_end.gif" /><input type="hidden" value="11" /></li>
+				</ul>
+				<input type="hidden" id="totalCnt" name="totalCnt" value="4857" />
+				<input type="hidden" id="paging" name="paging" value="10" />
+			
+	</div>
+	<!-- 페이징 끝 -->
+	</fieldset>
+</form>
+<form name="pagingForm" method="post">
+	
+</form>
+</div>
+<!-- 페이징 끝-->
+<!-- 게시판 리스트 끝-->
+</body>
+</html>

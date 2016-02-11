@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="viewport"content="user-scalable=yes, winitial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,width=device-width, target-densitydpi=medium-dpi"> 
+<title>구미버스 알고타요</title>
+<link href="../css/base.css" rel="stylesheet" type="text/css" media="all">
+<link href="../css/layout.css" rel="stylesheet" type="text/css"  media="all">
+<link rel="apple-touch-icon-precomposed" href="/touch-icon-precomposed.png" />
+<script src="../js/m.js"></script>
+<script src="../js/jquery-1.9.1.js"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("#top_search06").click(function(e){			
+			$("#top_search06").val('');
+	});		
+	//$("#loading").fadeOut(2000);
+	//$("#contents").fadeIn();
+});
+
+
+</script>
+</head>
+<body>
+<div id="contents">
+<a id="go_top">상단으로</a>
+
+
+
+
+
+
+<h1 id="logo"><a href="../"><img src="../images/logo2.gif" width="181" height="31" alt="구미버스정보시스템" class="mt14" /></a>
+
+</h1>
+<p id="top_searh_line"></p>
+
+<div id="top_search_wrap">
+	<div id="top_search01" ><div id="top_search07"><span id="top_search08"><a href="#" id="top_search09" class="ir"  onclick="javascript:searchNbs(this,'srchBs.do?act=&stopKname=&menuCode=1_01','','','112.175.247.161');return false;">인근정류장</a></span></div></div>	
+	<form  method="POST" action="srchBs.do">
+	
+	    <input type="hidden" name="act" value="" />  
+	    <input type="hidden" name="stopX" value="0" />
+	    <input type="hidden" name="stopY" value="0" />	    
+	    <input type="hidden" name="menuCode" value="1_01" />
+	<div id="top_search02">
+	<div id="top_search03"><img src="../images/top_search_left.gif" width="13"  onkeydown="if(event.keyCode==13){$('#search_btn').click();}"  value="" /></div>
+	<div id="top_search04"><input type="image" src="../images/top_search_right.gif" width="29" /></div>
+	<div id="top_search05"><input type="text" name="headStopKname"  value="정류소명/번호" id="top_search06" ></div>	
+	</div>
+	</form>
+</div>
+<div class="cb"></div>
+
+<div id="top_menu_area">
+	<ul id="top_menu">
+
+		<li class="li23">
+			<div style="margin-top:-17px"><img src="../images/on_arrow.png" width="8"></div>
+			<div><a href="m001_01.do?menuCode=1_01"><span  class="this_page">실시간정보</span></a></div>
+		<li class="sep">|</li>
+		<li class="li27">
+			<!--<div><a href="m002_01.do?menuCode=2_01"> 출도착지검색</a></div>-->
+			<div><a href="#"> 출도착지검색</a></div>
+		</li>
+
+		<li class="sep">|</li>
+		<li class="li23">
+			
+			<div><a href="m003_11.do?menuCode=3_11"> 노선검색</a></div>		
+		</li>
+		<li class="sep">|</li>
+		<li class="li23">
+			<div><a href="m004_11.do?menuCode=4_11"> 맞춤정보</a></div>
+		</li>
+	</ul>			
+</div>	
+<div id="top_menu_line"></div>
+<div style="clear:both"></div>
+<!-- 상단 끝-->
+
+<script>
+
+
+var arrNodeKname =
+                   [
+	                ["황상종점 출발점","884"] ,
+	                ["황상2주공","877"] ,
+	                ["황상1주공","875"] ,
+	                ["황상주공","885"] ,
+	                ["황상중앙시장입구","887"] ,
+	                ["황상동입구","879"] ,
+	                ["인동중학교","710"] ,
+	                ["인동정류장","708"] ,
+	                ["진평동","776"] ,
+	                ["인동시립도서관입구","706"] ,
+	                ["강동병원앞","16"] ,
+	                ["진평미래타운앞","778"] ,
+	                ["진평초등학교","782"] ,
+	                ["인동고등학교","701"] ,
+	                ["구평 부영7단지","101"] ,
+	                ["구평 부영8단지","102"] ,
+	                ["구평1동","103"] ,
+	                ["구평 부영2단지","100"] ,
+	                ["구평부영아파트","109"] ,
+	                ["인동고등학교입구","703"] ,
+	                ["진평대우아파트","775"] ,
+	                ["진평청구아파트","781"] ,
+	                ["인의초등학교입구","713"] ,
+	                ["진평동","777"] ,
+	                ["인동육교","707"] ,
+	                ["인동정류장","709"] ,
+	                ["인동중학교","711"] ,
+	                ["황상동입구","880"] ,
+	                ["황상현대아파트","889"] ,
+	                ["황상신화아파트","881"] ,
+	                ["하우저만","822"] ,
+	                ["효성2공장","898"] ,
+	                ["엘지이노텍","566"] ,
+	                ["성원아파트","449"] ,
+	                ["구포전원타운","118"] ,
+	                ["구포동","116"] ,
+	                ["옥계대우아파트앞","620"] ,
+	                ["신나리아파트","505"] ,
+	                ["옥계중학교앞","626"] ,
+	                ["금오공대정문","130"] ,
+	                ["금오공대종점","132"] ];
+	              
+//노선도에 표시될 tr tag를 15가지 type으로 나누었다. 이것을 조합해서 노선도를 그린다.
+
+
+//노선도에 표시될 정거장의 개수(1~120개)에 따라서 tr tag type을 아래 순서대로 조합하여 화면에 뿌려준다. 
+
+
+//정류장 개수에 따라 선택된 tr tag 조합 번호이다.
+</script>
+<!-- 본문 시작-->
+<nav id="menu01_nav">
+<div class="tb">
+<ul class="tr">
+<li class="td01 "><a href="m001_01.jsp?menuCode=1_01">버스도착정보</a></li>
+<li class="td02 selected"><a href="m001_11.jsp?menuCode=1_01">버스위치정보</a></li>
+</ul>
+</div>
+</nav>
+
+
+<section class="content">
+
+<div id="route_search_title">
+<span id="route_search_title01"><strong id="route_search_title02">91</strong></span>
+<span id="reload_icon"><a href="#" onclick="window.location.reload(true); return false;"><img src="../images/reload.gif" width="20" alt="정보 업데이트"/></a></span>
+<span id="route_icon"><a href="getBrtBusPosList.do?act=srchBrtBusPos&brtId=91&brtDirection=1&brtClass=0&menuCode=1_12">노선목록 <img src="../images/route_list_icon.gif" width="16" alt="노선목록"/></a><span style="color:#DFDFDF"> |</span></span>
+
+</div>
+
+<p id="title12" style="background:#F9F9F9">(구 4번)황상_금오공대</p>
+<p id="bg_slash"></p>
+
+
+<!-- 
+.bus_station  /* 버스가 없을때 역모양 .*/
+.bus  /* 버스가 있을때 .*/
+.no_space  /* 배경으로 깔린 버스노선을 흰색으로 덮어 숨긴다 종점등 처리시.*/ -->
+
+<p class="mt20"></p>
+<table id="route_map">
+<tr class='rl'><td width='43'><img src='../images/start_mark.gif' width='25' style='margin:-1px' alt='출발'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rt'></td></tr><tr class='tr40'><td align='left'><span style='color:#1B65C4'>출발</td><td name='stopKname'>1</td><td name='stopKname'>2</td><td name='stopKname'>3</td><td name='stopKname'>4</td><td class='rcl'></td></tr><tr class='rl'><td width='13' class='lt'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rb'></td></tr><tr class='tr40'><td class='cl'></td><td name='stopKname'>8</td><td name='stopKname'>7</td><td name='stopKname'>6</td><td name='stopKname'>5</td><td ></td></tr><tr class='rl'><td width='23' class='lb'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rt'></td></tr><tr class='tr40'><td></td><td name='stopKname'>1</td><td name='stopKname'>2</td><td name='stopKname'>3</td><td name='stopKname'>4</td><td class='rcl' align='right'></td></tr><tr class='rl'><td width='13' class='lt'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rb'></td></tr><tr class='tr40'><td class='cl'></td><td name='stopKname'>8</td><td name='stopKname'>7</td><td name='stopKname'>6</td><td name='stopKname'>5</td><td ></td></tr><tr class='rl'><td width='23' class='lb'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rt'></td></tr><tr class='tr40'><td></td><td name='stopKname'>1</td><td name='stopKname'>2</td><td name='stopKname'>3</td><td name='stopKname'>4</td><td class='rcl' align='right'></td></tr><tr class='rl'><td width='13' class='lt'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rb'></td></tr><tr class='tr40'><td class='cl'></td><td name='stopKname'>8</td><td name='stopKname'>7</td><td name='stopKname'>6</td><td name='stopKname'>5</td><td ></td></tr><tr class='rl'><td width='23' class='lb'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rt'></td></tr><tr class='tr40'><td></td><td name='stopKname'>1</td><td name='stopKname'>2</td><td name='stopKname'>3</td><td name='stopKname'>4</td><td class='rcl' align='right'></td></tr><tr class='rl'><td width='13' class='lt'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rb'></td></tr><tr class='tr40'><td class='cl'></td><td name='stopKname'>8</td><td name='stopKname'>7</td><td name='stopKname'>6</td><td name='stopKname'>5</td><td ></td></tr><tr class='rl'><td width='23' class='lb'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rt'></td></tr><tr class='tr40'><td></td><td name='stopKname'>1</td><td name='stopKname'>2</td><td name='stopKname'>3</td><td name='stopKname'>4</td><td class='rcl' align='right'></td></tr><tr class='rl'><td width='13' class='lt'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td class='bus_station' name='stopimg'></td><td width='23' class='rb'></td></tr><tr class='tr40'><td class='cl'></td><td name='stopKname'>8</td><td name='stopKname'>7</td><td name='stopKname'>6</td><td name='stopKname'>5</td><td ></td></tr><tr class='rl'><td width='23' class='lb'></td><td class='bus_station' name='stopimg'></td><td class='no_space'><img src='../images/end_station.gif' width='53' style='margin:-1px' alt='종점'></td><td class='no_space'></td><td class='no_space'></td><td width='23' class='no_space'></td></tr><tr class='tr40'><td></td><td name='stopKname'>9</td><td align='left'><span style='color:#C21819'>종점</span></td><td></td><td></td><td></td></tr></table>
+</section>
+<div class="cb"></div>
+<!-- 본문 끝-->
+<script>
+/*
+*  originalstr: lpad 할 text
+* length: lpad할 길이
+* strToPad: lpad 시킬 text
+*/
+function lpad(originalstr, length, strToPad) {
+    while (originalstr.length < length)
+        originalstr = strToPad + originalstr;
+    return originalstr;
+}
+
+
+				tempVal = arrNodeKname[4][0];
+				arrNodeKname[4][0] = arrNodeKname[7][0];
+				arrNodeKname[7][0] = tempVal;
+
+				tempVal = arrNodeKname[4][1];
+				arrNodeKname[4][1] = arrNodeKname[7][1];
+				arrNodeKname[7][1] = tempVal;
+				
+				tempVal = arrNodeKname[5][0];
+				arrNodeKname[5][0] = arrNodeKname[6][0];
+				arrNodeKname[6][0] = tempVal;
+				
+				tempVal = arrNodeKname[5][1];
+				arrNodeKname[5][1] = arrNodeKname[6][1];
+				arrNodeKname[6][1] = tempVal;
+				
+				tempVal = arrNodeKname[12][0];
+				arrNodeKname[12][0] = arrNodeKname[15][0];
+				arrNodeKname[15][0] = tempVal;
+
+				tempVal = arrNodeKname[12][1];
+				arrNodeKname[12][1] = arrNodeKname[15][1];
+				arrNodeKname[15][1] = tempVal;
+				
+				tempVal = arrNodeKname[13][0];
+				arrNodeKname[13][0] = arrNodeKname[14][0];
+				arrNodeKname[14][0] = tempVal;
+				
+				tempVal = arrNodeKname[13][1];
+				arrNodeKname[13][1] = arrNodeKname[14][1];
+				arrNodeKname[14][1] = tempVal;
+				
+				tempVal = arrNodeKname[20][0];
+				arrNodeKname[20][0] = arrNodeKname[23][0];
+				arrNodeKname[23][0] = tempVal;
+
+				tempVal = arrNodeKname[20][1];
+				arrNodeKname[20][1] = arrNodeKname[23][1];
+				arrNodeKname[23][1] = tempVal;
+				
+				tempVal = arrNodeKname[21][0];
+				arrNodeKname[21][0] = arrNodeKname[22][0];
+				arrNodeKname[22][0] = tempVal;
+				
+				tempVal = arrNodeKname[21][1];
+				arrNodeKname[21][1] = arrNodeKname[22][1];
+				arrNodeKname[22][1] = tempVal;
+				
+				tempVal = arrNodeKname[28][0];
+				arrNodeKname[28][0] = arrNodeKname[31][0];
+				arrNodeKname[31][0] = tempVal;
+
+				tempVal = arrNodeKname[28][1];
+				arrNodeKname[28][1] = arrNodeKname[31][1];
+				arrNodeKname[31][1] = tempVal;
+				
+				tempVal = arrNodeKname[29][0];
+				arrNodeKname[29][0] = arrNodeKname[30][0];
+				arrNodeKname[30][0] = tempVal;
+				
+				tempVal = arrNodeKname[29][1];
+				arrNodeKname[29][1] = arrNodeKname[30][1];
+				arrNodeKname[30][1] = tempVal;
+				
+				tempVal = arrNodeKname[36][0];
+				arrNodeKname[36][0] = arrNodeKname[39][0];
+				arrNodeKname[39][0] = tempVal;
+
+				tempVal = arrNodeKname[36][1];
+				arrNodeKname[36][1] = arrNodeKname[39][1];
+				arrNodeKname[39][1] = tempVal;
+				
+				tempVal = arrNodeKname[37][0];
+				arrNodeKname[37][0] = arrNodeKname[38][0];
+				arrNodeKname[38][0] = tempVal;
+				
+				tempVal = arrNodeKname[37][1];
+				arrNodeKname[37][1] = arrNodeKname[38][1];
+				arrNodeKname[38][1] = tempVal;
+				
+				document.getElementsByName("stopKname")[0].childNodes[0].nodeValue=arrNodeKname[0][0]+'(1'+lpad(arrNodeKname[0][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[1].childNodes[0].nodeValue=arrNodeKname[1][0]+'(1'+lpad(arrNodeKname[1][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[2].childNodes[0].nodeValue=arrNodeKname[2][0]+'(1'+lpad(arrNodeKname[2][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[3].childNodes[0].nodeValue=arrNodeKname[3][0]+'(1'+lpad(arrNodeKname[3][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[4].childNodes[0].nodeValue=arrNodeKname[4][0]+'(1'+lpad(arrNodeKname[4][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[5].childNodes[0].nodeValue=arrNodeKname[5][0]+'(1'+lpad(arrNodeKname[5][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[6].childNodes[0].nodeValue=arrNodeKname[6][0]+'(1'+lpad(arrNodeKname[6][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[7].childNodes[0].nodeValue=arrNodeKname[7][0]+'(1'+lpad(arrNodeKname[7][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[8].childNodes[0].nodeValue=arrNodeKname[8][0]+'(1'+lpad(arrNodeKname[8][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[9].childNodes[0].nodeValue=arrNodeKname[9][0]+'(1'+lpad(arrNodeKname[9][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[10].childNodes[0].nodeValue=arrNodeKname[10][0]+'(1'+lpad(arrNodeKname[10][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[11].childNodes[0].nodeValue=arrNodeKname[11][0]+'(1'+lpad(arrNodeKname[11][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[12].childNodes[0].nodeValue=arrNodeKname[12][0]+'(1'+lpad(arrNodeKname[12][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[13].childNodes[0].nodeValue=arrNodeKname[13][0]+'(1'+lpad(arrNodeKname[13][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[14].childNodes[0].nodeValue=arrNodeKname[14][0]+'(1'+lpad(arrNodeKname[14][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[15].childNodes[0].nodeValue=arrNodeKname[15][0]+'(1'+lpad(arrNodeKname[15][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[16].childNodes[0].nodeValue=arrNodeKname[16][0]+'(1'+lpad(arrNodeKname[16][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[17].childNodes[0].nodeValue=arrNodeKname[17][0]+'(1'+lpad(arrNodeKname[17][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[18].childNodes[0].nodeValue=arrNodeKname[18][0]+'(1'+lpad(arrNodeKname[18][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[19].childNodes[0].nodeValue=arrNodeKname[19][0]+'(1'+lpad(arrNodeKname[19][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[20].childNodes[0].nodeValue=arrNodeKname[20][0]+'(1'+lpad(arrNodeKname[20][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[21].childNodes[0].nodeValue=arrNodeKname[21][0]+'(1'+lpad(arrNodeKname[21][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[22].childNodes[0].nodeValue=arrNodeKname[22][0]+'(1'+lpad(arrNodeKname[22][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[23].childNodes[0].nodeValue=arrNodeKname[23][0]+'(1'+lpad(arrNodeKname[23][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[24].childNodes[0].nodeValue=arrNodeKname[24][0]+'(1'+lpad(arrNodeKname[24][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[25].childNodes[0].nodeValue=arrNodeKname[25][0]+'(1'+lpad(arrNodeKname[25][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[26].childNodes[0].nodeValue=arrNodeKname[26][0]+'(1'+lpad(arrNodeKname[26][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[27].childNodes[0].nodeValue=arrNodeKname[27][0]+'(1'+lpad(arrNodeKname[27][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[28].childNodes[0].nodeValue=arrNodeKname[28][0]+'(1'+lpad(arrNodeKname[28][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[29].childNodes[0].nodeValue=arrNodeKname[29][0]+'(1'+lpad(arrNodeKname[29][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[30].childNodes[0].nodeValue=arrNodeKname[30][0]+'(1'+lpad(arrNodeKname[30][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[31].childNodes[0].nodeValue=arrNodeKname[31][0]+'(1'+lpad(arrNodeKname[31][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[32].childNodes[0].nodeValue=arrNodeKname[32][0]+'(1'+lpad(arrNodeKname[32][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[33].childNodes[0].nodeValue=arrNodeKname[33][0]+'(1'+lpad(arrNodeKname[33][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[34].childNodes[0].nodeValue=arrNodeKname[34][0]+'(1'+lpad(arrNodeKname[34][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[35].childNodes[0].nodeValue=arrNodeKname[35][0]+'(1'+lpad(arrNodeKname[35][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[36].childNodes[0].nodeValue=arrNodeKname[36][0]+'(1'+lpad(arrNodeKname[36][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[37].childNodes[0].nodeValue=arrNodeKname[37][0]+'(1'+lpad(arrNodeKname[37][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[38].childNodes[0].nodeValue=arrNodeKname[38][0]+'(1'+lpad(arrNodeKname[38][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[39].childNodes[0].nodeValue=arrNodeKname[39][0]+'(1'+lpad(arrNodeKname[39][1],4,'0')+')';
+
+				document.getElementsByName("stopKname")[40].childNodes[0].nodeValue=arrNodeKname[40][0]+'(1'+lpad(arrNodeKname[40][1],4,'0')+')';
+
+/*
+var ip = "112.175.247.161";
+if(ip == "61.38.247.207" || ip=="127.0.0.1"){
+	document.write("ConnectionChk >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>success<br>");
+	
+		document.write(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>bisNodeList<br>");
+		
+				document.write("884<br>");
+			
+				document.write("877<br>");
+			
+				document.write("875<br>");
+			
+				document.write("885<br>");
+			
+				document.write("887<br>");
+			
+				document.write("879<br>");
+			
+				document.write("710<br>");
+			
+				document.write("708<br>");
+			
+				document.write("776<br>");
+			
+				document.write("706<br>");
+			
+				document.write("16<br>");
+			
+				document.write("778<br>");
+			
+				document.write("782<br>");
+			
+				document.write("701<br>");
+			
+				document.write("101<br>");
+			
+				document.write("102<br>");
+			
+				document.write("103<br>");
+			
+				document.write("100<br>");
+			
+				document.write("109<br>");
+			
+				document.write("703<br>");
+			
+				document.write("775<br>");
+			
+				document.write("781<br>");
+			
+				document.write("713<br>");
+			
+				document.write("777<br>");
+			
+				document.write("707<br>");
+			
+				document.write("709<br>");
+			
+				document.write("711<br>");
+			
+				document.write("880<br>");
+			
+				document.write("889<br>");
+			
+				document.write("881<br>");
+			
+				document.write("822<br>");
+			
+				document.write("898<br>");
+			
+				document.write("566<br>");
+			
+				document.write("449<br>");
+			
+				document.write("118<br>");
+			
+				document.write("116<br>");
+			
+				document.write("620<br>");
+			
+				document.write("505<br>");
+			
+				document.write("626<br>");
+			
+				document.write("130<br>");
+			
+				document.write("132<br>");
+			
+	document.write(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>arrNodeKnameList<br>");
+	for( j=0; j<Math.floor(41); j++){
+		document.write(arrNodeKname[j][1]+"<br>")
+	}
+}
+*/
+</script>
+<!-- 하단 공통 시작-->
+	<div id="footer_area" class="mt12">
+		<ul id="footer_menu">		
+			<li id="footer_login" style="display:block"><a href="login.jsp">로그인</a></li>
+			<li id="footer_join" style="display:block"><a href="#" onclick="javascript:delLoginInfo();return false;">로그아웃</a></li>
+			<li class="sep"> | </li>			
+			<li><a href="http://bis.gumi.go.kr/GCBIS">PC버전</a></li>
+			<li class="sep"> | </li>
+			<li><a href="#go_top">맨위로</a></li>
+		</ul>
+
+		<p id="copyright">Copyright©GUMI City Hall</p>
+	</div>
+	</body>
+<script>
+if(getCookie('userid')) {
+	$('#footer_login').css('display','none');
+	$('#footer_join').css('display','block');
+}
+else {
+	$('#footer_login').css('display','block');
+	$('#footer_join').css('display','none');	
+}
+</script>
+</html>
