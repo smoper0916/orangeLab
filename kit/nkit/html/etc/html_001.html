@@ -1,0 +1,376 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<link rel="stylesheet" type="text/css" href="default/css/board.css" />
+<link rel="stylesheet" type="text/css" href="default/css/base.css" />
+<link rel="stylesheet" type="text/css" href="default/css/skip.css" />
+<link rel="stylesheet" type="text/css" href="default/css/layout.css" />
+<link rel="stylesheet" type="text/css" href="default/css/content.css" />
+<link rel="stylesheet" type="text/css" href="default/css/paging.css" /> <link rel="stylesheet" type="text/css" href="../../../js/calendar/css/aqua/theme.css">
+<script type="text/javascript" src="../../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../../js/paging.js"></script>
+<script type="text/javascript" src="../../../js/valid.js"></script>
+<script type="text/javascript" src="../../../js/common.js"></script>
+<script type='text/javascript' src="../../../js/calendar/jquery.dynDateTime.js"></script>
+<script type="text/javascript" src="../../../js/calendar/calendar-kr.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	/* 게시판 등록화면으로 이동 */
+	$('#boardNormalView_btn_insert').css('cursor','pointer').click(function() {
+		window.location = 'move_insert01.do?conf_no=566&group_no=&up_geul_no=&board_type=hm';
+	});
+
+	/* 조회글 삭제 */
+	$('#boardNormalView_btn_del').css('cursor','pointer').click(function() {
+		btnConfirm('del');
+	});
+
+	/* 조회글 출력 */
+	$('#boardNormalView_btn_print').css('cursor','pointer').click(function() {
+		win = window.open();
+	    self.focus();
+	    win.document.open();
+	    win.document.write('<'+'html'+'><'+'head'+'><'+'style'+'>');
+	    win.document.write('body, td { font-family: Verdana; font-size: 10pt;}');
+	    win.document.write('<'+'/'+'style'+'><'+'/'+'head'+'><'+'body'+'>');
+	    win.document.write(document.getElementById("view_content").innerHTML);
+	    win.document.write('<'+'/'+'body'+'><'+'/'+'html'+'>');
+	    win.document.close();
+	    win.print();
+	    win.close();
+	});	
+
+
+	/* 게시판 삭제 or 수정화면 이동 */
+	$('#boardNormalView_btn_confirm').css('cursor','pointer').click(function() {
+		if($('#frm_view input[name=CONFIRM_GB]').val() == 'del') btnDel();
+		else if($('#frm_view input[name=CONFIRM_GB]').val() == 'modi') btnModi();
+	});
+
+	/* 게시판 리스트 */
+	$('#boardNormalView_btn_list').css('cursor','pointer').click(function() {
+		window.location = 'list01.do?conf_no=566&board_type=hm&c_page=1';
+	});
+
+	/* 조회글 수정 */
+	$('#boardNormalView_btn_modi').css('cursor','pointer').click(function() {
+		btnConfirm('modi');
+	});
+
+	/* 비밀번호 입력폼 초기화/감추기 */
+	$('#boardNormalView_btn_cancel').css('cursor','pointer').click(function() {
+		$('#frm_view input[name=PW]').val('');
+		$('#inp_pw').addClass('skip');
+	});
+
+
+	/* 답글 등록 화면 이동 */
+	$('#boardNormalView_btn_reply').css('cursor','pointer').click(function() {
+		var strParam = "?conf_no=566";
+		var form = document.frm_view;
+		var p_jemok = replaceAll(replaceAll(form.jemok.value, '"', '&#34;'), "'","&#180;");
+		strParam += "&group_no=140495";
+		strParam += "&up_geul_no=140495";
+		strParam += "&C_PAGE=1";
+		strParam += "&jemok=" + p_jemok;
+		strParam += "&mode=R";
+
+		window.location = 'move_insert01.do' + strParam;
+	});
+	/* 코멘트 수정 */
+	$('.comment_btn_modi').css('cursor','pointer').click(function() {
+		btnComment_Modi(this);
+		/*if(false) {
+			btnComment_Modi(this);
+		} else {
+			$(this).parent().find('.comment_pw').show();
+			$(this).parent().find('input[name=CONFIRM_GB]').val('modi');*/
+			//$('#naeyong_temp').removeAttr('readonly');
+		/*}*/
+	}); 
+
+	/* 코멘트 삭제 */
+	$('.comment_btn_del').css('cursor','pointer').click(function() {
+		btnComment_Del(this);
+		/*if(false) {
+			btnComment_Del(this);
+		} else {
+			$(this).parent().find('.comment_pw').show();
+			$(this).parent().find('input[name=CONFIRM_GB]').val('del');
+		}*/
+	});
+
+	/* 코멘트 등록 */
+	$('#comment_insert').css('cursor','pointer').click(function() {
+		
+		alert('로그인 후 이용가능합니다.');
+		
+		
+	});
+
+	/* 코멘트 수정/삭제 */
+	$('.comment_btn_confirm').css('cursor','pointer').click(function() {
+		if($(this).parent().find('input[name=CONFIRM_GB]').val() == 'del') btnComment_Del(this);
+		else if($(this).parent().find('input[name=CONFIRM_GB]').val() == 'modi') btnComment_Modi(this);
+	});
+
+	/* 코멘트 비밀번호 폼 감추기 */
+	$('.comment_btn_cancel').css('cursor','pointer').click(function() {
+		$(this).parent().hide();
+	});
+
+	resizeParentFrame('ifrMain', 20);
+});
+
+$(document).load(function() {
+	resizeParentFrame('ifrMain', 20);
+});
+
+
+function form_valid_comment(form) {
+	if(!req_valid2(form.jakseongja_nm,	0, 20, true,	"작성자"))	return false;
+	/*if(!req_valid2(form.bimil_no,		0, 20,	true,	"비밀번호"))	return false;*/
+	if(!req_valid2(form.naeyong,		0, 800, true,	"내용"))		return false;
+
+	return true;
+}
+
+function btnConfirm(gb) {
+	/*
+	if(true) {
+		$('#inp_pw').removeClass('skip');
+		$('#frm_view input[name=CONFIRM_GB]').val(gb);		
+	} else {
+		if(gb == 'del') btnDel();
+		else if(gb == 'modi') btnModi();
+	}
+	*/ 
+	if(gb == 'del') btnDel();
+	else if(gb == 'modi') btnModi();
+}
+
+function btnDel(){
+	if(confirm('삭제 하시겠습니까?')) {
+		$('#frm_view').attr('action', 'delete01.do');
+		$('#frm_view').attr('method', 'post');
+		$('#frm_view').submit();
+	}
+}
+
+function btnModi(){
+	$('#frm_view').attr('action', 'move_update01.do');
+	$('#frm_view').attr('method', 'get');
+	$('#frm_view').submit();
+}
+
+function btnComment_Del(el){
+	/*var pw = $(el).parent().parent().find('input[name=bimil_no_temp]').val();*/
+	var commentSeq = $(el).parent().parent().find('input[name=daetgeul_no_temp]').val();
+	if(confirm("삭제 하시겠습니까?")) {
+		$('#frm_comment_list').find('input[name=daetgeul_no]').val(commentSeq);
+		/*$('#frm_comment_list').find('input[name=bimil_no]').val(pw);*/
+		$('#frm_comment_list').attr('action', 'delete_comment.do');
+		$('#frm_comment_list').submit();
+		
+	} else {
+		return false;
+	}
+}
+
+function btnComment_Modi(el){
+	var commentSeq = $(el).parent().parent().find('input[name=daetgeul_no_temp]').val();
+	/*var pw = $(el).parent().parent().find('input[name=bimil_no_temp]').val();*/
+	var content = $('#frm_comment_list #comment'+commentSeq).find('textarea[name=naeyong_temp]').val();
+	if(confirm("수정 하시겠습니까?")) {
+		$('#frm_comment_list').find('input[name=daetgeul_no]').val(commentSeq);
+		/*$('#frm_comment_list').find('input[name=bimil_no]').val(pw);*/
+		$('#frm_comment_list').find('textarea[name=naeyong]').val(content);
+		$('#frm_comment_list').attr('action', 'update_comment.do');
+		$('#frm_comment_list').submit();
+		
+	} else {
+		return false;
+	}
+}
+
+
+//이미지 게시판의 이미지 클릭시 이미지를 원본 크기로 보여주는 팝업
+function popImage(path) {
+	//win = window.open('', 'image', 'menubar=no toolbar=no location=no status=no scrollbars=yes');
+    //self.focus();
+	win = window.open('', 'image');
+    win.document.open();
+    win.document.write('<'+'html'+'><'+'head'+'><'+'style'+'>');
+    //win.document.write('<'+'html'+'><'+'head'+'><title>image<' + '/' + 'title><'+'style'+'>');
+    win.document.write('body, td { font-family: Verdana; font-size: 10pt;}');
+    win.document.write('<'+'/'+'style'+'><'+'/'+'head'+'><'+'body oncontextmenu="return false"'+'>');
+    win.document.write('<img src=' + path + ' onclick="javascript:window.close();" style="cursor:pointer"><' + '/' + '>');
+    win.document.write('<'+'/'+'body'+'><'+'/'+'html'+'>');
+    win.document.close();
+}
+</script>
+</head>
+
+
+<body>
+<div id="boardNormalView" class="board_view" style="width: %; padding-top: 50px;">
+	<!-- 게시판 뷰 시작 -->
+	<form name="frm_view" id="frm_view" action="view01.do" method="get">
+	<iframe name="downloadFrm" id="downloadFrm" style="display: none;" width="0" height="0"></iframe>
+	<fieldset>
+	<input type="hidden" name="conf_no" value="566"/>
+	<input type="hidden" name="board_no" value="140495" />
+	<input type="hidden" name="group_no" value="140495" />
+	<input type="hidden" name="up_geul_no" value="" />
+	<input type="hidden" name="jemok" id="jemok" value="[ACE 학습법 특강]하루 15분 정리의 힘! (11월 26일)" />
+	<input type="hidden" id="board_type" name="board_type" value="hm" />
+	<input type="hidden" id="c_page" name=""c_page"" value="1" />
+	<input type="hidden" id="boardmokjeok_no" name="boardmokjeok_no" value="" />
+	<legend>게시판 뷰</legend>
+	
+	<ul class="title">
+		<li>[ACE 학습법 특강]하루 15분 정리의 힘! (11월 26일)</li>		<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+		<li class="hit">조회 : 379</li>
+	</ul>
+			
+
+	<div class="view_h_ext">
+		<dl colspan="2">
+			<dt>작성자</dt>
+			<dd>
+				
+					김경민
+					
+					
+					
+				
+				
+			</dd>
+		</dl>
+	</div>
+	<div class="view_h_ext">
+		<dl>
+			<dt>작성일</dt>
+			<dd>2015.11.13 16:22</dd>
+		</dl>
+		<dl>
+			<dt>수정일</dt>
+			<dd class="last">2015.11.18 11:02</dd>
+		</dl>
+	</div>
+	
+	
+		
+	
+	
+
+
+	<!-- 내용  시작 -->
+	
+	<div class="view_content" id="view_content">
+	
+		
+		<P>&nbsp;</P><IMG style="HEIGHT: 620px; WIDTH: 493px" alt="" src="http://www.kumoh.ac.kr/upload/b7bae7ed-1457-4adc-af32-76202b310de8.jpg" width=2694 height=3811> 
+		
+		
+	</div>
+	<!-- 내용 끝 -->
+
+	<!-- 게시판 버튼들 -->
+	<ul class="board_btn">
+		<li><img src="./default/img/board_btn_list.gif" alt="목록" id="boardNormalView_btn_list" /></li>
+		
+			
+		
+		
+		<li><img src="./default/img/board_btn_print.gif" alt="출력" id="boardNormalView_btn_print" /></li>
+		<li class="skip" id="inp_pw">
+			비밀번호 입력 : <input type="password" name="bimil_no" value="" class="board_search_inp" style="width: 95px;" />
+			<input type="hidden" name="CONFIRM_GB" value="" />
+			<img src="./default/img/board_btn_confirm.gif" alt="확인" id="boardNormalView_btn_confirm" />
+			<img src="./default/img/board_btn_cancel.gif" alt="취소" id="boardNormalView_btn_cancel" />
+		</li>
+		
+			
+		
+	</ul>
+	</fieldset>
+	<!-- 게시판 뷰 끝 -->
+	</form>
+
+	<!-- 댓글 등록 영역 시작 -->
+	
+	
+	<form name="frm_comment_insert" id="frm_comment_insert" action="insert02.do" method="post">
+	<fieldset>
+	<input type="hidden" name="conf_no" value="566" />
+	<input type="hidden" name="board_no" value="140495" />
+	<input type="hidden" name="group_no" value="" />
+	<input type="hidden" name="up_geul_no" value="" />
+	<input type="hidden" name="jakseongja_nm" value="" />
+	<legend>댓글 등록</legend>
+	
+	<div class="reply_content" style="margin-top:30px">
+		<p style="font-size:11px;"><b>작성자 </b> 
+		</p>
+		<textarea style="width: 88%; height: 84px; border: 1px solid #ddd;vertical-align: middle" name="naeyong"></textarea>
+		<input type="button" id="comment_insert" value="" style="height:88px;width:67px; background:url(./default/img/btn_comment.png) no-repeat;border:none;vertical-align: middle" />
+	</div>
+	</fieldset>
+	</form>
+	
+	
+	<!-- 댓글 등록 영역 끝 -->
+
+	<!-- 댓글 리스트 시작 -->
+	
+	
+	<form name="frm_comment_list" id="frm_comment_list" action="" method="post">
+	<fieldset>
+	<input type="hidden" name="board_no" value="140495" />
+	<input type="hidden" name="daetgeul_no" value="" />
+	<input type="hidden" name="conf_no" value="566" />
+	<input type="hidden" name="group_no" value="" />
+	<input type="hidden" name="up_geul_no" value="" />
+	<textarea style="display: none;" name="naeyong"></textarea>
+	<legend>댓글 리스트/수정/삭제</legend>
+	
+	</fieldset>
+	</form>
+	
+	
+	<!-- 댓글 리스트 끝 -->
+</div>
+</body>
+</html>

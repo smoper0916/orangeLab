@@ -1,0 +1,856 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<link rel="stylesheet" type="text/css" href="default/css/board.css" />
+<link rel="stylesheet" type="text/css" href="default/css/base.css" />
+<link rel="stylesheet" type="text/css" href="default/css/skip.css" />
+<link rel="stylesheet" type="text/css" href="default/css/layout.css" />
+<link rel="stylesheet" type="text/css" href="default/css/content.css" />
+<link rel="stylesheet" type="text/css" href="default/css/paging.css" /> <link rel="stylesheet" type="text/css" href="../../../js/calendar/css/aqua/theme.css">
+<script type="text/javascript" src="../../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../../js/paging.js"></script>
+<script type="text/javascript" src="../../../js/valid.js"></script>
+<script type="text/javascript" src="../../../js/common.js"></script>
+<script type='text/javascript' src="../../../js/calendar/jquery.dynDateTime.js"></script>
+<script type="text/javascript" src="../../../js/calendar/calendar-kr.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	$('#boardNormalList_btn_Insert').css('cursor','pointer').click(function() {
+		$('#frm_list').attr('action', 'move_insert01.do');
+		$('#frm_list').submit();
+	});
+
+	$('#boardNormalList_btn_Delete').css('cursor','pointer').click(function() {
+		btnDel();
+	});
+	
+	$('#boardNormalList_btn_Move').css('cursor','pointer').click(function() {
+		btnMove();
+	});
+	
+	$('#boardNormalList_btn_Search').css('cursor','pointer').click(function() {
+		btnSearch();
+	});
+	
+	resizeParentFrame('ifrMain');
+
+
+});
+
+function btnView(seq){
+	var form = document.frm_list;
+	var pform = document.pagingForm;
+	form.action = "view01.do";
+	form.board_no.value = seq;
+	form.method = "get";
+	form.submit();
+}
+
+function btnDel(){
+	var form = document.frm_list;
+	var obj = document.getElementsByName("chk");
+	var cnt = 0;
+
+	for(var  i = 0; i < obj.length; i++){
+		if(obj[i].checked == true){
+			cnt += 1;
+		}
+	}
+
+	if(cnt == 0){
+		alert('선택된 항목이 없습니다.');
+		return false;
+	}
+
+	if (!confirm("선택된 게시글을 삭제 하시겠습니까?")){
+		return false;
+	}
+
+	form.action = "delete01_all.do";
+	form.method = "get";
+	form.submit();
+}
+
+function btnMove(){
+	var form = document.frm_list;
+	var obj = document.getElementsByName("chk");
+	var cnt = 0;
+
+	for(var  i = 0; i < obj.length; i++){
+		if(obj[i].checked == true){
+			cnt += 1;
+		}
+	}
+	if(form.confno.value == null || form.confno.value < 1){
+		alert('이동 할 게시판을 선택 하십시오.');
+		$('#frm_list select[name=confno]').focus();
+		return false;
+	}
+	if(cnt == 0){
+		alert('선택된 항목이 없습니다.');
+		return false;
+	}
+
+	if (!confirm("선택된 게시글을 이동 하시겠습니까?")){
+		return false;
+	}
+	
+	form.action = "move01.do";
+	form.to_conf_no.value = form.confno.value;
+	form.method = "get";
+	form.submit();
+}
+
+function btnSearch(){
+	var form = document.frm_list;
+	var pForm = document.pagingForm;
+	form.C_PAGE.value = "1";
+	form.action = "list01.do";
+	form.method = "get";
+	form.submit();
+}
+
+
+
+function btnSearchEnter(event) {
+	var key;
+	if(window.event) // IE
+	{
+		key = event.keyCode;
+	}
+	else if(event.which) // Netscape/Firefox/Opera
+	{
+		key = event.which;
+	}
+
+	if(key == 13) btnSearch();
+	
+}
+</script>
+</head>
+
+<body>
+<div id="boardNormalList_DIV" style="width: %; padding-top: 10px; padding-bottom: 20px;">
+<form name="frm_list" id="frm_list" action="list01.do" method="get">
+<fieldset>
+	<input type="hidden" name="conf_no" value="566"/>
+	<input type="hidden" name="board_no" value="" />
+	<input type="hidden" name="group_no" value="-1" />
+	<input type="hidden" name="up_geul_no" value="-1" />
+	<input type="hidden" name="to_conf_no" value=""/>
+	<input type="hidden" name="delete_yn" value="0"/>
+	<input type="hidden" id="board_type" name="board_type" value="hm" />
+	<input type="hidden" name="C_PAGE" value="3" />
+	<legend>홈페이지-[특강안내]게시판 리스트</legend>
+	<!-- 검색부 시작-->
+
+				
+	<div class="board_search">
+	<dl>
+		<dt>
+
+			<select name="search_key" class="board_sel">
+				<option value="jemok" >제목</option>
+				<option value="naeyong" >내용</option>
+				<option value="jakseongja_nm" >작성자</option>
+			</select>
+		</dt>
+		<dd><input class="board_search_inp" id="hp_id" size="25" type="text" name="keyword" value="" onkeypress="btnSearchEnter(event);"/></dd>
+		<dd><img src="./default/img/board_btn_search.gif" alt="검색" id="boardNormalList_btn_Search" /></dd>
+	</dl>
+	</div>
+	<!-- 검색부 끝 -->
+
+	
+	
+	<!-- 게시판리스트 시작 -->
+	<table class="board_list" summary="각 게시물의 번호, 제목, 파일, 작성자, 작성일, 조회를 볼수 있고 제목 링크를 통해서 게시물 상세 내용으로 이동합니다.">
+		<caption id="boardNormalList_BoardConfDesc">게시판 : 전체게시물 115개, 페이지3/3</caption>
+		<thead>
+			<tr>
+			
+			
+				<th class="fir" width="70">번호</th>
+				
+				<th>제목</th>
+				
+				<th width="100">작성자</th>
+				
+				
+				<th width="80">작성일</th>								<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->				<th class="end" width="50">조회</th>
+			</tr>
+		</thead>
+		<tbody id="boardNormalList_ListBoardListVo">
+			
+			
+			<!-- 공지사항 리스트 :: S -->
+			
+				
+					<tr onclick="btnView('122233');" title="(창의지식재산센터)특허검색교육 및 특허코디네이터(2,9~2.11)" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] (창의지식재산센터)특허검색교육 및 특허코디네이터(2,9...</a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+					
+			  			<td>
+			  				권혁문
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2015.02.02</td>												<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>1223</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('117211');" title="[ACE사업] 신기술 특강 안내(2014.11.12(수) 10시 ~, T301호)" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] [ACE사업] 신기술 특강 안내(2014.11.12(수) 10시 ~, T3...</a>
+							
+							
+						</td>
+					
+			  			<td>
+			  				이정은
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.11.11</td>												<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>1028</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('106790');" title="오늘 기분은 어떠십니까?(5월 27일 화요일 오후 2시)" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] 오늘 기분은 어떠십니까?(5월 27일 화요일 오후 2시)</a>
+							
+							
+						</td>
+					
+			  			<td>
+			  				류정희
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.05.23</td>												<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>1998</td>
+			  		</tr>
+		  		
+		  	
+				
+					<tr onclick="btnView('103514');" title="신입생인적성검사 결과 해석특강 안내" 
+						onmouseover="this.style.cursor='hand';this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+						<td><img src="./default/img/board_icon_notice_o.gif" alt="공지사항" /></td>
+				  		<td class="notice">
+							<a href="#">[공지] 신입생인적성검사 결과 해석특강 안내</a>
+							
+							
+						</td>
+					
+			  			<td>
+			  				김주희
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.03.12</td>												<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>967</td>
+			  		</tr>
+		  		
+		  	
+			<!-- 공지사항 리스트 :: E -->
+			
+			
+				
+				
+					<tr title="[ACE사업]2014-2학기 핵심역량수업연계형초청특강"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>75</td>
+			  			<td class="left" onclick="btnView('116299');" style="cursor: pointer;">
+							<a href="#">[ACE사업]2014-2학기 핵심역량수업연계형초청특강 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				박진솔
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.10.23</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>647</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="tech+인성특강 운영 안내 [교양교육지원센터] -일자및장소수정"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>74</td>
+			  			<td class="left" onclick="btnView('115732');" style="cursor: pointer;">
+							<a href="#">tech+인성특강 운영 안내 [교양교육지원센터] -일자및장소수정 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				박진솔
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.10.13</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>890</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[취업] 2014년 하반기 취업특강 개최 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>73</td>
+			  			<td class="left" onclick="btnView('115624');" style="cursor: pointer;">
+							<a href="#">[취업] 2014년 하반기 취업특강 개최 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				이은연
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.10.10</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>481</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[태양광 자격증 취득지원] 신재생에너지발전설비 기능사"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>72</td>
+			  			<td class="left" onclick="btnView('114617');" style="cursor: pointer;">
+							<a href="#">[태양광 자격증 취득지원] 신재생에너지발전설비 기능사 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				박민지
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.09.22</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>775</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[탄소소재 교육 개설] 8월 교육 안내 (2단계)"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>71</td>
+			  			<td class="left" onclick="btnView('110421');" style="cursor: pointer;">
+							<a href="#">[탄소소재 교육 개설] 8월 교육 안내 (2단계) </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				박민지
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.08.04</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>605</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[그린에너지융합센터] 전문가특강 안내 (차세대 대면적 태양전지 제작 연구)"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>70</td>
+			  			<td class="left" onclick="btnView('107418');" style="cursor: pointer;">
+							<a href="#">[그린에너지융합센터] 전문가특강 안내 (차세대 대면적 태양전지 제작 연구) </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				배지은
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.06.05</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>647</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(6월 9일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>69</td>
+			  			<td class="left" onclick="btnView('107383');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(6월 9일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.06.05</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>448</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(6월 2일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>68</td>
+			  			<td class="left" onclick="btnView('107077');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(6월 2일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.05.29</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>473</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="제11회 “KIT 명품 인문학 강좌” 알림 "
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>67</td>
+			  			<td class="left" onclick="btnView('106953');" style="cursor: pointer;">
+							<a href="#">제11회 “KIT 명품 인문학 강좌” 알림  </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				손희정
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.05.27</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>622</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(5월 26일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>66</td>
+			  			<td class="left" onclick="btnView('106747');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(5월 26일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.05.22</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>362</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[ACE] 2014년도 제1차 학습법 특강 개최 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>65</td>
+			  			<td class="left" onclick="btnView('106616');" style="cursor: pointer;">
+							<a href="#">[ACE] 2014년도 제1차 학습법 특강 개최 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김경민
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.05.20</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>324</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(5월 19일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>64</td>
+			  			<td class="left" onclick="btnView('106473');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(5월 19일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.05.16</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>380</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(5월 12일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>63</td>
+			  			<td class="left" onclick="btnView('106108');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(5월 12일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.05.07</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>448</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(4월 28일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>62</td>
+			  			<td class="left" onclick="btnView('105608');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(4월 28일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.04.21</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>561</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[교양교직과정부] 2014년도 1학기 핵심역량수업연계형 초청특강 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>61</td>
+			  			<td class="left" onclick="btnView('105603');" style="cursor: pointer;">
+							<a href="#">[교양교직과정부] 2014년도 1학기 핵심역량수업연계형 초청특강 안내 </a>
+							<img src="./default/img/board_icon_file.gif" alt="file" />
+							
+						</td>
+			  		
+			  			<td>
+			  				박진솔
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.04.21</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>396</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(4월 21일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>60</td>
+			  			<td class="left" onclick="btnView('105358');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(4월 21일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.04.14</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>518</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(4월 14일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>59</td>
+			  			<td class="left" onclick="btnView('105192');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(4월 14일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.04.10</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>400</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(4월 7일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>58</td>
+			  			<td class="left" onclick="btnView('104874');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(4월 7일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.04.04</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>534</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="[취업] 2014년도 상반기 취업특강 개최 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>57</td>
+			  			<td class="left" onclick="btnView('104588');" style="cursor: pointer;">
+							<a href="#">[취업] 2014년도 상반기 취업특강 개최 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				이은연
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.03.31</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>536</td>
+			  		</tr>
+		  		
+		  	
+				
+				
+					<tr title="2014-1학기 대학생활의 이해 특강(3월 31일) 안내"
+						onmouseover="this.style.background='#FBDFE7'" 
+						onmouseout="this.style.background='white';">
+						
+			  			<td>56</td>
+			  			<td class="left" onclick="btnView('104407');" style="cursor: pointer;">
+							<a href="#">2014-1학기 대학생활의 이해 특강(3월 31일) 안내 </a>
+							
+							
+						</td>
+			  		
+			  			<td>
+			  				김장환
+			  			</td>
+			  		
+			  		
+			  		
+			  			<td>2014.03.26</td>						<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+			  			<td>575</td>
+			  		</tr>
+		  		
+		  	
+		  	
+			
+			 
+			
+		</tbody>
+	</table>
+	<!-- 게시판리스트 끝 -->
+	
+	<!-- 게시판 기능/버튼 -->
+	<ul class="board_btn">
+		
+		<!-- 속성에 글쓰기가 선택되었을 경우 -->
+		
+			
+		
+	</ul>
+	<!-- 페이징 시작 -->
+	<div id="pagingWrapper">
+		
+
+
+			
+				<ul>
+					<li class="pagingGoToPrevFirst"><img src="/img/common/btn_first.gif" /><input type="hidden" value="1" /></li>
+					<li class="pagingGoToPrev"><img src="/img/common/btn_prev.gif" /><input type="hidden" value="2" /></li>
+				
+				
+					<li class="pagingNumbering">1 ·<input type="hidden" value="1" /></li>
+				
+				
+					<li class="pagingNumbering">2 ·<input type="hidden" value="2" /></li>
+				
+				
+					<li class="pagingNumbering">3 ·<input type="hidden" value="3" /></li>
+				
+				
+					<li class="pagingNumbering">4 ·<input type="hidden" value="4" /></li>
+				
+				
+					<li class="pagingNumbering">5 ·<input type="hidden" value="5" /></li>
+				
+				
+					<li class="pagingNumbering">6<input type="hidden" value="6" /></li>
+				
+					<li class="pagingGoToNext"><img src="/img/common/btn_next.gif" /><input type="hidden" value="4" /></li>
+					<li class="pagingGoToNextLast"><img src="/img/common/btn_end.gif" /><input type="hidden" value="6" /></li>
+				</ul>
+				<input type="hidden" id="totalCnt" name="totalCnt" value="115" />
+				<input type="hidden" id="paging" name="paging" value="10" />
+			
+	</div>
+	<!-- 페이징 끝 -->
+	</fieldset>
+</form>
+<form name="pagingForm" method="post">
+	
+</form>
+</div>
+<!-- 페이징 끝-->
+<!-- 게시판 리스트 끝-->
+</body>
+</html>
