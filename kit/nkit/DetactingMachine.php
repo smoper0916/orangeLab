@@ -20,6 +20,7 @@ include_once "db_manager.php";
 include_once "Post.php";
 include_once "xml_maker.php";
 include_once "ServerParser.php";
+include_once "GcmMaker.php";
 
 // 1. DB에 접속하여 키워드 개수를 체크합니다. 키워드가 0일 경우 종료합니다.
 // 2. Server Parser에 파싱하라고 시켜서 파싱한 Data를 받아옵니다.
@@ -37,7 +38,7 @@ class DetactingMachine
 
 	function __construct()
 	{
-	$this->dbManager = new DBManager();
+		$this->dbManager = new DBManager();
 	}
 
 	function Run(){
@@ -85,12 +86,26 @@ class DetactingMachine
 						if (strpos($title, $k['keyword']) !== false) {
 							//6
 							//echo "<p>반갑습니다. " . $k['keyword'] . "</p>";
+							//6-1 해당 키워드를 신청한 유저 목록을 받는다.
+							$total = $this->dbManager->db_select_full("kit_wished_keywords", "m_id, date", "keyword=".$k['keyword']);
+
+							//6-2 유저들의 Device Token을 받아온다.
+							$regIDs = array();
+
+							//$user_cnt = count($total);
+							foreach($total as $item) {
+								$device_id = $this->dbManager->db_select_full("kit_subscriber", "device_id", "user_id=" . $item['m_id'])[0]['device_id'];
+								array_push($regIDs, $device_id);
+							}
+
+							//6-3 메시지를 전송한다.
+							$gm = new GcmMaker();
+							$gm->SetRegIDs($regIDs);
+							$gm->SetMessage("[알림] ".$title);
+							$gm->Excute();
 						}
 					}
 				}
-
-
-
 
 				//7
 				foreach ($new_post as $p) {

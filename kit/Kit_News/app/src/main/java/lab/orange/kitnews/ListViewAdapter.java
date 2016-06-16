@@ -17,11 +17,13 @@ public class ListViewAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private ArrayList<NewsListItem> data;
     private int layout;
+    private int item;
 
-    public ListViewAdapter(Context context, int layout, ArrayList<NewsListItem> data){
+    public ListViewAdapter(Context context, int layout, ArrayList<NewsListItem> data, int item){
         this.inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.data=data;
         this.layout=layout;
+        this.item = item;
     }
 
     @Override
@@ -35,9 +37,23 @@ public class ListViewAdapter extends BaseAdapter {
         if(convertView==null){
             convertView=inflater.inflate(layout,parent,false);
         }
-        NewsListItem listviewitem = data.get(position);
-        TextView title=(TextView)convertView.findViewById(R.id.title);
-        title.setText(listviewitem.getTitle());
+
+        switch (item) {
+            case 0:
+                NewsListItem listviewitem = data.get(position);
+                TextView title = (TextView) convertView.findViewById(R.id.news_title);
+                TextView date = (TextView) convertView.findViewById(R.id.news_date);
+                title.setText(listviewitem.getTitle());
+                date.setText(listviewitem.getDate());
+                break;
+            case 1:
+                NewsListItem listviewitem1 = data.get(position);
+                TextView title1 = (TextView) convertView.findViewById(R.id.news_border_title);
+                TextView date1 = (TextView) convertView.findViewById(R.id.news_border_date);
+                title1.setText(listviewitem1.getTitle());
+                date1.setText(listviewitem1.getDate());
+                break;
+        }
         return convertView;
     }
 }

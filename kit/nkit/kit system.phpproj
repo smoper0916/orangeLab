@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>kit system</Name>
+    <ProjectGuid>{d008591a-d432-4f5f-be47-f3de77a68ddd}</ProjectGuid>
+    <RootNamespace>
+    </RootNamespace>
+    <OutputType>Library</OutputType>
+    <ProjectTypeGuids>{A0786B88-2ADB-4C21-ABE8-AA2D79766269}</ProjectTypeGuids>
+    <SpecificPageValue>setest.php</SpecificPageValue>
+    <StartAction>SpecificPage</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="InputFeedback.php" />
+    <Compile Include="html\contents\html_001.html" />
+    <Compile Include="html\contents\html_002.html" />
+    <Compile Include="html\etc\html_001.html" />
+    <Compile Include="html\etc\html_002.html" />
+    <Compile Include="html\etc\html_003.html" />
+    <Compile Include="html\content.html" />
+    <Compile Include="login.php" />
+    <Compile Include="register.php" />
+    <Compile Include="setest.php" />
+    <Compile Include="snoopy\AUTHORS" />
+    <Compile Include="snoopy\ChangeLog" />
+    <Compile Include="snoopy\cookie.txt" />
+    <Compile Include="snoopy\COPYING.lib" />
+    <Compile Include="snoopy\FAQ" />
+    <Compile Include="snoopy\INSTALL" />
+    <Compile Include="snoopy\NEWS" />
+    <Compile Include="snoopy\README" />
+    <Compile Include="snoopy\Snoopy.class.php" />
+    <Compile Include="snoopy\TODO" />
+    <Compile Include="snoopy\~%24README" />
+    <Compile Include="xml\result_001.xml" />
+    <Compile Include="ContentsParser.php" />
+    <Compile Include="db_manager.php" />
+    <Compile Include="DetactingMachine.php" />
+    <Compile Include="GeneralParser.php" />
+    <Compile Include="index.php" />
+    <Compile Include="Post.php" />
+    <Compile Include="ServerParser.php" />
+    <Compile Include="simple_html_dom.php" />
+    <Compile Include="ViewBoard.php" />
+    <Compile Include="ViewContents.php" />
+    <Compile Include="xml_maker.php" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="html\contents" />
+    <Folder Include="html\etc" />
+    <Folder Include="html" />
+    <Folder Include="Classes\" />
+    <Folder Include="snoopy" />
+    <Folder Include="xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="HTMLPage1.html" />
+  </ItemGroup>
+</Project>

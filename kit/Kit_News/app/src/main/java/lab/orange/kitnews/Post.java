@@ -1,9 +1,11 @@
 package lab.orange.kitnews;
 
+import java.io.Serializable;
+
 /**
  * Created by 재혁 on 2/11/2016.
  */
-public class Post {
+public class Post implements Serializable{
     private int board_no;
     private int module_no;
     private String title;

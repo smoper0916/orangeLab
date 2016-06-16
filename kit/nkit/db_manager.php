@@ -2,6 +2,18 @@
 
 namespace orangelab;
 
+/*
+ * ERROR CODE
+ *  200 : 테이블 생성 실패
+ *  201 : 데이터 입력 실패
+ *  202 : 데이터 수정 실패
+ *  203 : 데이터 삭제 실패
+ *  204 : 데이터 출력 실패
+ *  210 : DB 쿼리 실패
+ * 
+ */
+
+
 class DBManager
 {
 	private $s;
@@ -27,7 +39,7 @@ class DBManager
 	function db_create($Tname,$Attribute){
 	  $sql="create table ".$Tname."(".$Attribute.");";
 	  $result = mysqli_query($this->s, $sql);
-	  if(!$result) echo "테이블생성 실패";
+	  if(!$result) print(json_encode(array("code"=>"200")));
 	}
 	//-------------------------------------------------------------------
 	// 데이터 삽입
@@ -36,7 +48,7 @@ class DBManager
 	  $sql="insert into ".$Tname." VALUES (".$data.");";
         //echo $sql;
 	  $result = mysqli_query($this->s, $sql);
-	  if(!$result) echo "<p>데이터입력 실패 : ".$sql."</p>";
+	  if(!$result) print(json_encode(array("code"=>"201", "error_sql"=>$sql)));
 	}
 
 	//-------------------------------------------------------------------
@@ -45,7 +57,7 @@ class DBManager
 	function db_delete($Tname, $where){
 	  $sql="delete from ".$Tname." WHERE ".$where.";";
 	  $result = mysqli_query($this->s, $sql);
-	  if(!$result) echo "데이터삭제 실패";
+	  if(!$result) print(json_encode(array("code"=>"203")));
 	}
 
 	//-------------------------------------------------------------------
@@ -54,7 +66,7 @@ class DBManager
 	function db_modify($Tname, $set, $where){
 	  $sql="update ".$Tname." SET ".$set." WHERE ".$where;
 	  $result = mysqli_query($this->s, $sql);
-	  if(!$result) echo "데이터수정 실패";
+	  if(!$result) print(json_encode(array("code"=>"202")));
 	}
 
 
@@ -68,7 +80,7 @@ class DBManager
 	  if($result){
 	   while($row = mysqli_fetch_array($result)) $total[]=$row;
 	   return $total;
-	  }else echo "데이터출력 실패";
+	  }else print(json_encode(array("code"=>"204")));
 	}
 	function db_select_no_option($Tname){
 		$sql="select * from ".$Tname;
@@ -78,7 +90,7 @@ class DBManager
             $total = null;
 			while($row = mysqli_fetch_array($result)) $total[] = $row;
 			return $total;
-		}else echo "데이터출력 실패";
+		}else print(json_encode(array("code"=>"204")));
 	}
 	function db_select_full_no_option($Tname, $Aname){
 	    $sql="select ".$Aname." from ".$Tname;
@@ -88,7 +100,7 @@ class DBManager
             $total = null;
 	        while($row = mysqli_fetch_array($result)) $total[] = $row;
 	        return $total;
-	    }else echo "데이터출력 실패";
+	    }else print(json_encode(array("code"=>"204")));
 	}
 	function db_select_full($Tname, $Aname, $Catt){
 	    $sql="select ".$Aname." from ".$Tname." where ".$Catt;
@@ -98,7 +110,7 @@ class DBManager
             $total = null;
 	        while($row = mysqli_fetch_array($result)) $total[] = $row;
 	        return $total;
-	    }else echo "데이터출력 실패";
+	    }else print(json_encode(array("code"=>"204")));
 	}
 	function db_select($Tname, $Catt){
 	  $sql="select * from ".$Tname." where ".$Catt;
@@ -109,7 +121,7 @@ class DBManager
           $total = null;
           while($row = mysqli_fetch_array($result)) $total[] = $row;
           return $total;
-	  }else echo "데이터출력 실패";
+	  }else print(json_encode(array("code"=>"204")));
 	}
 
 	//-------------------------------------------------------------------
@@ -121,7 +133,7 @@ class DBManager
 	   $row = mysqli_fetch_array($result);
 	   return $row;  
 	  }else{
-	   echo "쿼리 실패";
+          print(json_encode(array("code"=>"210")));
 	  }
 	}
 	function db_query2($sql){
@@ -136,7 +148,7 @@ class DBManager
                 return $total;
             }
 	    }else{
-	        echo "쿼리 실패";
+	        print(json_encode(array("code"=>"210")));
 	    }
 	}
 }

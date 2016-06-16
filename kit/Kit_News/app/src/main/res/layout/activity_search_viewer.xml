@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="lab.orange.kitnews.BoardViewerActivity"
+    android:weightSum="1">
+    <RelativeLayout
+        android:id="@+id/topLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/orange_top_bg"
+        android:paddingTop="8dp"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:paddingBottom="8dp"
+
+        >
+
+        <TextView
+            android:id="@+id/board_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="검색 결과"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            />
+        <ImageView
+            android:id="@+id/back_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/back_icon"
+            android:layout_alignParentLeft="true"
+            />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/search_edit_box"
+            android:layout_width="255dp"
+            android:layout_height="match_parent"
+            android:textColor="#686868"
+            android:layout_weight="0.66" />
+
+        <Button
+            android:id="@+id/search_btn"
+            android:layout_width="107dp"
+            android:layout_height="wrap_content"
+            android:text="검색"
+            android:background="@drawable/orange_border_bg_white"
+            android:layout_gravity="right" />
+
+
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/total_TextView"
+        android:layout_gravity="center_horizontal"
+        android:text="검색된 게시글 수 : 0" />
+
+    <ListView
+        android:id="@+id/board_listview"
+        android:layout_width="match_parent"
+        android:layout_height="336dp"
+        android:divider="#00000000"
+        android:dividerHeight="5dp"
+        android:choiceMode="singleChoice"
+        android:layout_margin="16dp"
+        android:layout_weight="0.31" />
+
+</LinearLayout>

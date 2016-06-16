@@ -1,8 +1,22 @@
 package lab.orange.kitnews;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -14,40 +28,121 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    ListView listView = null;
+    ListView listView, drawerListView;
     ArrayList<NewsListItem> data = new ArrayList<>();
+    ArrayList<Post> xmlData = new ArrayList<>();
+    String[] menuList = {"일반소식", "학사안내", "행사안내", "특강안내"};
+    DrawerLayout drawerLayout;
+    ImageView menuBtn;
+    Button searchBtn;
+    EditText searchEditText;
+    //enum menuNum{일반소식, 학사안내, 행사안내, 특강안내};
+
+
+    public static final int PROGRESS_DIALOG = 1001;
+
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         listView = (ListView)findViewById(R.id.listview);
-        test();
-        /*
-        NewsListItem t1 = new NewsListItem("[공지] 2016학년도 편입생 수강신청 안내");
-        NewsListItem t2 = new NewsListItem("[공지] 2016-1학기 학부 수강신청 안내(대학원,계약학과 제외)");
-        NewsListItem t3 = new NewsListItem("[공지] 2016-1학기 수강지도 상담 안내");
+        drawerListView = (ListView)findViewById(R.id.menu_drawer);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        menuBtn = (ImageView)findViewById(R.id.menu_btn);
+        searchBtn = (Button)findViewById(R.id.search_btn);
+        searchEditText = (EditText)findViewById(R.id.search_edit_box);
 
-        data.add(t1);
-        data.add(t2);
-        data.add(t3);
-*/
+        drawerListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuList));
+        drawerListView.setOnItemClickListener(new DrawerItemOnClickListener());
+        drawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+        });
 
+        menuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //if(drawerLayout.isDrawerOpen())
+                drawerLayout.openDrawer(Gravity.LEFT);
+            }
+        });
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            public  void onClick(View v){
+                Intent searchIntent = new Intent(MainActivity.this,SearchViewerActivity.class);
+
+                searchIntent.putExtra("searchText",searchEditText.getText().toString());
+
+                startActivity(searchIntent);
+            }
+        });
+
+        showDialog(PROGRESS_DIALOG);
+
+        getKeywordNews();
 
     }
 
-    private void test(){
-        final MainActivity tmp = this;
-        new Thread(new Runnable() {
+    private class DrawerItemOnClickListener implements AdapterView.OnItemClickListener{
+        public void onItemClick(AdapterView<?> parentView, View clickedView, int position, long id)
+        {
+            // 게시글 목록을 보여주는 액티비티로 이동
+            Intent newIntent = new Intent(MainActivity.this, BoardViewerActivity.class);
+            switch (position){
+                case 0:
 
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                ArrayList<Post> xmlData = getXmlData(); //아래 메소드를 호출하여 XML data를 파싱해서 String 객체로 얻어오기
+                    //break;
+                case 1:
 
-                for(int i=0; i<xmlData.size(); i++){
-                    data.add(new NewsListItem(xmlData.get(i).getTitle()));
-                }
+                    //break;
+                case 2:
+
+                    //break;
+                case 3:
+                    newIntent.putExtra("module_no", position);
+                    break;
+                default:
+
+                    break;
+            }
+            startActivity(newIntent);
+            drawerLayout.closeDrawer(Gravity.LEFT);
+        }
+    }
+    private class ListViewOnClickListener implements AdapterView.OnItemClickListener
+    {
+        public void onItemClick(AdapterView<?> parentView, View clickedView, int position, long id)
+        {
+            Intent postViewerIntent = new Intent(MainActivity.this, PostViewerActivity.class);
+            postViewerIntent.putExtra("title", xmlData.get(position).getTitle());
+            postViewerIntent.putExtra("post", xmlData.get(position));
+            postViewerIntent.putExtra("board_no", xmlData.get(position).getBoard_no());
+            postViewerIntent.putExtra("date", xmlData.get(position).getDate());
+            postViewerIntent.putExtra("module_no", xmlData.get(position).getModule_no());
+
+            // 이전 액티비티에 대한 정보 전달
+            postViewerIntent.putExtra("prev_activity", MainActivity.class);
+
+            // 전환
+            startActivity(postViewerIntent);
+        }
+    }
+
+    private void getKeywordNews(){
+    final MainActivity tmp = this;
+    new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            xmlData = getXmlData(); //아래 메소드를 호출하여 XML data를 파싱해서 String 객체로 얻어오기
+
+            for(int i=0; i<xmlData.size(); i++){
+                data.add(new NewsListItem(xmlData.get(i).getTitle(), xmlData.get(i).getDate()));
+            }
+
+            progressDialog.dismiss();
                 /*
                 //UI Thread(Main Thread)를 제외한 어떤 Thread도 화면을 변경할 수 없기때문에
                 //runOnUiThread()를 이용하여 UI Thread가 TextView 글씨 변경하도록 함
@@ -60,13 +155,24 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 */
-                ListViewAdapter adapter = new ListViewAdapter(tmp, R.layout.news_listitem, data);
-                listView.setAdapter(adapter);
 
-            }
-        }).start();
 
-    }
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    // TODO Auto-generated method stub
+                    ListViewAdapter adapter = new ListViewAdapter(tmp, R.layout.news_listitem, data, 0);
+                    listView.setAdapter(adapter);
+                    listView.setOnItemClickListener(new ListViewOnClickListener());
+                }
+            });
+
+
+        }
+    }).start();
+
+}
 
     //XmlPullParser를 이용하여 Naver 에서 제공하는 OpenAPI XML 파일 파싱하기(parsing)
     private ArrayList<Post> getXmlData(){
@@ -153,4 +259,18 @@ public class MainActivity extends AppCompatActivity {
         return postArrayList;
 
     }//getXmlData method....
+
+
+    //progressDialog를 이용하여 로딩을 표시
+    public Dialog onCreateDialog(int id) {
+        switch (id) {
+            case (PROGRESS_DIALOG):
+                progressDialog = new ProgressDialog((this));
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("데이터 불러오는 중");
+
+                return progressDialog;
+        }
+        return null;
+    }
 }

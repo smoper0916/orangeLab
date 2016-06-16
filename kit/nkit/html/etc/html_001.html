@@ -48,7 +48,7 @@
 $(document).ready(function() {
 	/* 게시판 등록화면으로 이동 */
 	$('#boardNormalView_btn_insert').css('cursor','pointer').click(function() {
-		window.location = 'move_insert01.do?conf_no=566&group_no=&up_geul_no=&board_type=hm';
+		window.location = 'move_insert01.do?conf_no=38&group_no=&up_geul_no=&board_type=hm';
 	});
 
 	/* 조회글 삭제 */
@@ -80,7 +80,7 @@ $(document).ready(function() {
 
 	/* 게시판 리스트 */
 	$('#boardNormalView_btn_list').css('cursor','pointer').click(function() {
-		window.location = 'list01.do?conf_no=566&board_type=hm&c_page=1';
+		window.location = 'list01.do?conf_no=38&board_type=hm&c_page=1';
 	});
 
 	/* 조회글 수정 */
@@ -97,11 +97,11 @@ $(document).ready(function() {
 
 	/* 답글 등록 화면 이동 */
 	$('#boardNormalView_btn_reply').css('cursor','pointer').click(function() {
-		var strParam = "?conf_no=566";
+		var strParam = "?conf_no=38";
 		var form = document.frm_view;
 		var p_jemok = replaceAll(replaceAll(form.jemok.value, '"', '&#34;'), "'","&#180;");
-		strParam += "&group_no=140495";
-		strParam += "&up_geul_no=140495";
+		strParam += "&group_no=144806";
+		strParam += "&up_geul_no=144806";
 		strParam += "&C_PAGE=1";
 		strParam += "&jemok=" + p_jemok;
 		strParam += "&mode=R";
@@ -249,19 +249,19 @@ function popImage(path) {
 	<form name="frm_view" id="frm_view" action="view01.do" method="get">
 	<iframe name="downloadFrm" id="downloadFrm" style="display: none;" width="0" height="0"></iframe>
 	<fieldset>
-	<input type="hidden" name="conf_no" value="566"/>
-	<input type="hidden" name="board_no" value="140495" />
-	<input type="hidden" name="group_no" value="140495" />
+	<input type="hidden" name="conf_no" value="38"/>
+	<input type="hidden" name="board_no" value="144806" />
+	<input type="hidden" name="group_no" value="144806" />
 	<input type="hidden" name="up_geul_no" value="" />
-	<input type="hidden" name="jemok" id="jemok" value="[ACE 학습법 특강]하루 15분 정리의 힘! (11월 26일)" />
+	<input type="hidden" name="jemok" id="jemok" value="2016년 신입생 기초학력평가 실시 안내" />
 	<input type="hidden" id="board_type" name="board_type" value="hm" />
 	<input type="hidden" id="c_page" name=""c_page"" value="1" />
 	<input type="hidden" id="boardmokjeok_no" name="boardmokjeok_no" value="" />
 	<legend>게시판 뷰</legend>
 	
 	<ul class="title">
-		<li>[ACE 학습법 특강]하루 15분 정리의 힘! (11월 26일)</li>		<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
-		<li class="hit">조회 : 379</li>
+		<li>2016년 신입생 기초학력평가 실시 안내</li>		<!-- kit포커스, kit뉴스, kit피클 조회항목 제외 2015.03 수정 -->
+		<li class="hit">조회 : 4025</li>
 	</ul>
 			
 
@@ -270,7 +270,7 @@ function popImage(path) {
 			<dt>작성자</dt>
 			<dd>
 				
-					김경민
+					최희영
 					
 					
 					
@@ -282,11 +282,11 @@ function popImage(path) {
 	<div class="view_h_ext">
 		<dl>
 			<dt>작성일</dt>
-			<dd>2015.11.13 16:22</dd>
+			<dd>2016.02.04 11:40</dd>
 		</dl>
 		<dl>
 			<dt>수정일</dt>
-			<dd class="last">2015.11.18 11:02</dd>
+			<dd class="last">2016.02.25 16:44</dd>
 		</dl>
 	</div>
 	
@@ -301,7 +301,7 @@ function popImage(path) {
 	<div class="view_content" id="view_content">
 	
 		
-		<P>&nbsp;</P><IMG style="HEIGHT: 620px; WIDTH: 493px" alt="" src="http://www.kumoh.ac.kr/upload/b7bae7ed-1457-4adc-af32-76202b310de8.jpg" width=2694 height=3811> 
+		<P><IMG alt="" src="http://www.kumoh.ac.kr/upload/5a2a8950-97b4-4142-b4ba-facec8f9f0df.jpg"></P><P><IMG alt="" src="http://www.kumoh.ac.kr/upload/1c65c32b-a046-4590-8f89-83259c5e29fd.jpg">&nbsp;</P>
 		
 		
 	</div>
@@ -310,8 +310,6 @@ function popImage(path) {
 	<!-- 게시판 버튼들 -->
 	<ul class="board_btn">
 		<li><img src="./default/img/board_btn_list.gif" alt="목록" id="boardNormalView_btn_list" /></li>
-		
-			
 		
 		
 		<li><img src="./default/img/board_btn_print.gif" alt="출력" id="boardNormalView_btn_print" /></li>
@@ -331,44 +329,9 @@ function popImage(path) {
 
 	<!-- 댓글 등록 영역 시작 -->
 	
-	
-	<form name="frm_comment_insert" id="frm_comment_insert" action="insert02.do" method="post">
-	<fieldset>
-	<input type="hidden" name="conf_no" value="566" />
-	<input type="hidden" name="board_no" value="140495" />
-	<input type="hidden" name="group_no" value="" />
-	<input type="hidden" name="up_geul_no" value="" />
-	<input type="hidden" name="jakseongja_nm" value="" />
-	<legend>댓글 등록</legend>
-	
-	<div class="reply_content" style="margin-top:30px">
-		<p style="font-size:11px;"><b>작성자 </b> 
-		</p>
-		<textarea style="width: 88%; height: 84px; border: 1px solid #ddd;vertical-align: middle" name="naeyong"></textarea>
-		<input type="button" id="comment_insert" value="" style="height:88px;width:67px; background:url(./default/img/btn_comment.png) no-repeat;border:none;vertical-align: middle" />
-	</div>
-	</fieldset>
-	</form>
-	
-	
 	<!-- 댓글 등록 영역 끝 -->
 
 	<!-- 댓글 리스트 시작 -->
-	
-	
-	<form name="frm_comment_list" id="frm_comment_list" action="" method="post">
-	<fieldset>
-	<input type="hidden" name="board_no" value="140495" />
-	<input type="hidden" name="daetgeul_no" value="" />
-	<input type="hidden" name="conf_no" value="566" />
-	<input type="hidden" name="group_no" value="" />
-	<input type="hidden" name="up_geul_no" value="" />
-	<textarea style="display: none;" name="naeyong"></textarea>
-	<legend>댓글 리스트/수정/삭제</legend>
-	
-	</fieldset>
-	</form>
-	
 	
 	<!-- 댓글 리스트 끝 -->
 </div>
